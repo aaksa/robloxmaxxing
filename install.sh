@@ -1,16 +1,18 @@
 #!/usr/bin/env bash
-# install.sh - check requirements, then link (or copy) this folder into the Claude Code skills directory.
-# Usage:  bash install.sh [--dir ~/.claude/skills/robloxmaxxing] [--copy] [--force]
+# install.sh - check requirements, then link (or copy) this folder into the Claude Code or Antigravity skills directory.
+# Usage:  bash install.sh [--antigravity] [--dir PATH] [--copy] [--force]
+#   default: ~/.claude/skills/robloxmaxxing (Claude Code); --antigravity: ~/.gemini/config/skills/robloxmaxxing
 # Needs Blender 5.x, Python 3 and Roblox Studio (with its MCP server enabled). Nothing is downloaded or installed.
 set -euo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-TARGET="$HOME/.claude/skills/robloxmaxxing"; COPY=0; FORCE=0
+TARGET="$HOME/.claude/skills/robloxmaxxing"; AGENT="Claude Code"; COPY=0; FORCE=0
 while [ $# -gt 0 ]; do
   case "$1" in
-    --dir) TARGET="${2:?--dir needs a path}"; shift 2;;
+    --antigravity) TARGET="$HOME/.gemini/config/skills/robloxmaxxing"; AGENT="Antigravity"; shift;;
+    --dir) TARGET="${2:?--dir needs a path}"; AGENT="your agent"; shift 2;;
     --copy) COPY=1; shift;;
     --force) FORCE=1; shift;;
-    -h|--help) sed -n '2,4p' "$0" | sed 's/^# \{0,1\}//'; exit 0;;
+    -h|--help) sed -n '2,5p' "$0" | sed 's/^# \{0,1\}//'; exit 0;;
     *) echo "unknown option: $1" >&2; exit 2;;
   esac
 done
@@ -33,4 +35,4 @@ if [ "$COPY" = 1 ]; then
 else
   ln -s "$HERE" "$TARGET"; echo "Linked $TARGET -> $HERE"
 fi
-echo "Done. In Claude Code, ask for a Roblox asset built in Blender, or run /robloxmaxxing."
+echo "Done. In $AGENT, ask for a Roblox asset built in Blender, or run /robloxmaxxing."
