@@ -1,0 +1,3 @@
+examples/*/out/rbx_assets.json
+__pycache__/
+.DS_Store
