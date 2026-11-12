@@ -8,7 +8,7 @@ description: >-
   no upload), uploaded through Open Cloud and placed with colours, materials, collision, size and facing checked. Works with MCP for
   Blender and the Roblox Studio MCP (or headless Blender + StudioMCP over stdio). Use for any request to model, build, generate,
   export, import, upload or fix a 3D asset for a Roblox game or experience, a Roblox prop/building/map piece/accessory/NPC, "make
-  this in Blender for Roblox", Blender-to-Roblox Studio pipelines, or Roblox mesh import problems (scale, facing, triangles, colours).
+  this in Blender for Roblox", Blender-to-Roblox Studio pipelines, or Roblox mesh import problems (scale, facing, triangles, colours). Also covers reels and short films SET IN a Roblox-style world (a voice-over turned into a 30-40 s vertical film rendered in Blender: big living worlds, reactive events, the hook, camera, lighting, sound), with evidence-graded research on what keeps viewers watching.
 ---
 
 # robloxmaxxing
@@ -111,7 +111,15 @@ capture described in one sentence. `place` removes the preview of the same name 
   Swap it in a place by destroying the old instance, then `place` again (insert_asset loads the latest revision).
 - `preview` only ever writes into the `RbxPreview` model (a name-only lookup once wrote preview parts into the uploaded
   model of the same name; fixed 4 Nov 2026).
-- Still unverified: textured FBX -> SurfaceAppearance (flat-colour assets do not need it), and the 3D Importer route.
+- **Textured FBX -> SurfaceAppearance works** (WinterGuardian, asset 103755819206325, 5 Nov 2026): Open Cloud makes one
+  SurfaceAppearance with Color, Normal, Roughness and Metalness maps (each its own Image asset). Right after upload the maps are
+  still "being generated" (console), the SA gives up and renders grey/chrome, and it never retries. Fix: wait a minute, then
+  destroy the SA and create a new one with the same four IDs (`execute_luau` can set the map properties). A Decal with the
+  ColorMap ID is a quick test that the image itself loads. `ContentProvider:PreloadAsync` reports Failure in Edit for every
+  asset, so it proves nothing. For a textured asset, give the manifest colour #FFFFFF so the texture is not tinted.
+- `auto_setup_avatar` through MCP timed out 3/3 on a 10k-tri textured body (5 Nov 2026) and left nothing in Workspace.
+  Fall back to Studio's Avatar tab > Avatar Setup (the user runs it, and it shows its own errors).
+- Still unverified: the 3D Importer route.
 
 ## Levels, characters, wearables
 - **Levels:** model each kit piece once as its own asset, place it once, then clone it in Studio with `execute_luau` in chunks with
@@ -122,6 +130,15 @@ capture described in one sentence. `place` removes the preview of the same name 
   Fitting Tool (`references/specs.md`). Selling needs ID verification, 2FA, Plus/Premium and fees: say so before anyone plans on it.
 - **Neural fallbacks** (organic one-offs only): Studio's `generate_mesh`, MCP for Blender's `generate_3d` (may cost credits: ask),
   Meshy. Every neural mesh still goes through stage 3. Roblox's open Cube weights are research-only: not for a game you ship.
+
+## Reels in a Roblox world (the film lane)
+A reel or short film that plays out in a blocky Roblox-style world is rendered in Blender and never touches Studio: no upload, no
+GATE A / GATE S. Read `references/reels.md` first; it holds the pipeline, what makes a world read as big and alive (district-scale
+countries, looping life on F-curve CYCLES, one event per spoken claim), how to build the first 3-5 seconds (voice from frame 1, the
+premise SHOWN in frame 1 as a flash-forward, the result withheld, setup afterwards as a rewind), camera, lighting-arc, transition,
+overlay/CTA and sound rules, and the mistakes that each cost a render. The evidence behind those rules is in
+`references/research/` (two reports; read them instead of researching again). After any camera change run
+`python3 -I scripts/luma_trace.py <plates.mp4>`: a one-frame jump means a whip passes through geometry.
 
 ## Never ship
 A mesh over 20k triangles or a part you never looked at; a level imported as one FBX; procedural shader detail you expect to survive;
@@ -136,6 +153,9 @@ Roblox UGC or game characters; an asset you upload without the user knowing it g
 | `references/art-direction.md` | the brief, the three-distance check, what made v1 weak and v2 better, Roblox collision/rig/hygiene rules (from awesome-gamedev-agent-skills) |
 | `references/scorpion_v1_v2_studio.jpg` | v1 Blender / v2 art-directed / Studio Parts-only, side by side in Studio |
 | `scripts/rbx.py` | studios, user, preview, upload, place, apply, capture, luau, tools (StudioMCP over stdio + Open Cloud, stdlib only) |
+| `references/reels.md` | the film lane: Roblox-world reels in Blender (world scale, living world, hook, camera, light, transitions, overlay, sound, lessons) |
+| `references/research/` | `short-video-retention.md` (22 techniques, evidence-graded) and `reel-hook-and-camera-craft.md` (hook builds second by second, camera/effect/animation/sound catalogue) |
+| `scripts/luma_trace.py` | per-frame brightness trace of a rendered film: finds flashes and dark dips from whips through geometry |
 | `references/specs.md` | Roblox's import, texture, avatar/UGC and Studio rules with dates |
 | `references/modeling.md` | the bpy recipe, stud scale cheat sheet, kits, textures, characters, lessons from reelmaxxing |
 | `examples/chest/` | `build.py` (the treasure chest: hinge-pivot lid, merged bands) and its `out/` (FBX, sidecars, snapshots, Studio capture) |
